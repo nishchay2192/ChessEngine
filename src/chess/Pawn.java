@@ -19,13 +19,18 @@ public class Pawn extends Piece {
 		// System.out.println(X+" "+Y+" "+destX+" "+destY);
 		if (this.getColor() == Color.WHITE) {
 			if (destX - X == 1 && destY == Y) {
-				// System.out.println("Pawn seems to make a normal move.");
+				if (destX == 7) {
+					return MoveType.UPGRADE;
+				}// System.out.println("Pawn seems to make a normal move.");
 				return MoveType.NORMAL;
 			} else if (destX - X == 2 && destY == Y && !this.moved) {
 				// System.out.println("Pawn seems to make a doublestep move.");
 				return MoveType.DOUBLESTEP;
 			} else if (destX - X == 1 && (destY - Y == 1 || destY - Y == -1)) {
 				if (dest.getPiece() != null) {
+					if (destX == 7) {
+						return MoveType.UPGRADE;
+					}
 					// System.out.println("Pawn seems to make a kill move.");
 					return MoveType.NORMAL;
 				} else {
@@ -39,16 +44,19 @@ public class Pawn extends Piece {
 
 		} else {
 			if (destX - X == -1 && destY == Y) {
-
+				if (destX == 0) {
+					return MoveType.UPGRADE;
+				}
 				// System.out.println("Pawn seems to make a normal move.");
 				return MoveType.NORMAL;
 			} else if (destX - X == -2 && destY == Y && !this.moved) {
-
 				// System.out.println("Pawn seems to make a doublestep move.");
 				return MoveType.DOUBLESTEP;
 			} else if (destX - X == -1 && (destY - Y == 1 || destY - Y == -1)) {
 				if (dest.getPiece() != null) {
-
+					if (destX == 0) {
+						return MoveType.UPGRADE;
+					}
 					// System.out.println("Pawn seems to make a kill move.");
 					return MoveType.NORMAL;
 				} else {
@@ -57,7 +65,6 @@ public class Pawn extends Piece {
 					return MoveType.ENPASSANT;
 				}
 			} else {
-
 				// System.out.println("Pawn seems to make an illegal move.");
 				return MoveType.ILLEGAL;
 			}

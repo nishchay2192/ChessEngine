@@ -149,21 +149,21 @@ public abstract class Piece {
 
 	public MoveType basicCheck(Square dest) {
 		if (dest == location) {
-			//System.out.println("Return Illegal move 0");
+			// System.out.println("Return Illegal move 0");
 			return MoveType.ILLEGAL;
 		}
 		if (location.board == null)
-			//System.out.println("Done");
-		if (location.board.getTurn() != color) {
-			//System.out.println("Return Illegal move 1");
-			return MoveType.ILLEGAL;
-		}
+			// System.out.println("Done");
+			if (location.board.getTurn() != color) {
+				// System.out.println("Return Illegal move 1");
+				return MoveType.ILLEGAL;
+			}
 		if (dest.getPiece() != null && dest.getPiece().getColor() == color) {
-			//System.out.println("Return Illegal move 3");
+			// System.out.println("Return Illegal move 3");
 			return MoveType.ILLEGAL;
 		}
-		//System.out.println(this.getSquare().getX() + " "
-		//		+ this.getSquare().getY());
+		// System.out.println(this.getSquare().getX() + " "
+		// + this.getSquare().getY());
 		Square from = location;
 		from.setPiece(null);
 		Piece destPiece = dest.getPiece();
@@ -187,28 +187,29 @@ public abstract class Piece {
 			this.setSquare(from);
 			return MoveType.ILLEGAL;
 		}
-		//System.out.println("King safe so far");
+		// System.out.println("King safe so far");
 		// restore
 		from.setPiece(this);
 		dest.setPiece(destPiece);
 		if (destPiece != null)
 			destPiece.setSquare(dest);
 		this.setSquare(from);
-		//System.out.println(this.getSquare().getX() + " "
-		//		+ this.getSquare().getY());
+		// System.out.println(this.getSquare().getX() + " "
+		// + this.getSquare().getY());
 		return MoveType.NORMAL;
 	}
 
 	public MoveType tryToMove(Square dest) {
-		if (canMove(dest) != MoveType.ILLEGAL) {
-			if (canMove(dest) == MoveType.ENPASSANT) {
+		MoveType canMoveType = canMove(dest);
+		if (canMoveType != MoveType.ILLEGAL) {
+			if (canMoveType == MoveType.ENPASSANT) {
 				if (dest.board.getEnpassant() == dest) {
 					dest.board.move(dest, this.getSquare());
 					return MoveType.ENPASSANT;
 				} else {
 					return MoveType.ILLEGAL;
 				}
-			} else if (canMove(dest) == MoveType.DOUBLESTEP) {
+			} else if (canMoveType == MoveType.DOUBLESTEP) {
 				if (this.color == Color.WHITE)
 					dest.board.move(dest, this.getSquare(),
 							dest.board.the_board[dest.getX() - 1][dest.getY()]);
@@ -217,7 +218,7 @@ public abstract class Piece {
 							dest.board.the_board[dest.getX() + 1][dest.getY()]);
 				}
 				return MoveType.DOUBLESTEP;
-			} else if (canMove(dest) == MoveType.CASTLE) {
+			} else if (canMoveType == MoveType.CASTLE) {
 				dest.board.move(dest, location);
 				int row = 7;
 				if (this.color == Color.WHITE) {
@@ -231,6 +232,9 @@ public abstract class Piece {
 							dest.board.the_board[row][7]);
 				}
 				return MoveType.CASTLE;
+			} else if (canMoveType == MoveType.UPGRADE) {
+				dest.board.move(dest, location);
+				return MoveType.UPGRADE;
 			} else {
 				dest.board.move(dest, location);
 				return MoveType.NORMAL;

@@ -17,13 +17,17 @@ public class Rook extends Piece {
 		int destY = dest.getY();
 		if ((Math.abs(destX - X) == 0 || Math.abs(destY - Y) == 0)) {
 			int diffX = destX - X;
+			if (diffX != 0)
+				diffX = diffX / Math.abs(diffX);
 			int diffY = destY - Y;
+			if (diffY != 0)
+				diffY = diffY / Math.abs(diffY);
 			int currX = X;
 			int currY = Y;
-			while (currX != destX) {
+			while (currX != destX && currY != destY) {
 				currX = X + diffX;
 				currY = Y + diffY;
-				if (currX != destX) {
+				if (currX != destX && currY != destY) {
 					if (dest.board.the_board[currX][currY].getPiece() == null) {
 						continue;
 					} else {

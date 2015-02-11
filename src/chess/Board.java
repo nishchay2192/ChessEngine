@@ -8,8 +8,6 @@ public class Board {
 	private Square enpassant;
 	private Piece blackKing, whiteKing;
 	boolean blackCanCastle = true, whiteCanCastle = true;
-	boolean blackQRookUnmoved = true, blackKRookUnmoved = true,
-			whiteQRookUnmoved = true, whiteKRookUnmoved = true;
 	Square[][] the_board = new Square[WIDTH][HEIGHT];
 
 	public Board() {
@@ -103,16 +101,70 @@ public class Board {
 		move(to, from, null);
 	}
 
-	public boolean tryToMove(Square to, Square from) {
+	public void upgradePawn(Piece piece, char upgrade) {
+		Piece toBeUpgraded;
+		switch (upgrade) {
+		case 'Q':
+			toBeUpgraded = new Queen(piece.getSquare(), piece.getColor(),
+					PieceType.QUEEN);
+			break;
+		case 'R':
+			toBeUpgraded = new Rook(piece.getSquare(), piece.getColor(),
+					PieceType.ROOK);
+			break;
+		case 'N':
+			toBeUpgraded = new Knight(piece.getSquare(), piece.getColor(),
+					PieceType.KNIGHT);
+			break;
+		case 'B':
+			toBeUpgraded = new Bishop(piece.getSquare(), piece.getColor(),
+					PieceType.BISHOP);
+			break;
+		default: // This is Redundant
+			toBeUpgraded = new Queen(piece.getSquare(), piece.getColor(),
+					PieceType.QUEEN);
+			break;
+		}
+		// Upgrade on Board
+		piece.getSquare().setPiece(toBeUpgraded);
+		toBeUpgraded.setSquare(piece.getSquare());
+		piece.kill();
+		piece.setSquare(null);
+		piece = toBeUpgraded;
+	}
+
+	public MateType canKingMove(Square king) {
+
+		return MateType.NOTYETMATE;
+	}
+
+	public MateType checkIfMate(Color color) {
+		Square king = getKingSquare(color);
+		MateType mateType = canKingMove(king);
+		return mateType;
+	}
+
+	public MoveType tryToMove(Square to, Square from) {
 		Piece piece = from.getPiece();
-		if(piece == null)
-			return false;
+		//System.out.println("Entered Board");
+		if (piece == null) {
+			System.out.println("MoveType is: " + MoveType.ILLEGAL);
+			return MoveType.ILLEGAL;
+		} else if (piece.getColor() != turn) {
+			System.out.println("MoveType is: " + MoveType.ILLEGAL);
+			return MoveType.ILLEGAL;
+		}
 		System.out.println("TryingToMove: " + piece.getPieceType());
 		MoveType moveType = piece.tryToMove(to);
 		System.out.println("MoveType is: " + moveType);
 		if (moveType == MoveType.ILLEGAL) {
-			return false;
-		} else if (moveType == MoveType.ENPASSANT) {
+			return MoveType.ILLEGAL;
+		}
+		if (turn == Color.BLACK)
+			turn = Color.WHITE;
+		else
+			turn = Color.BLACK;
+		if (moveType == MoveType.ENPASSANT) {
 			if (piece.getColor() == Color.WHITE) {
 				Piece getPiece = to.board.the_board[to.getX() - 1][to.getY()]
 						.getPiece();
@@ -132,13 +184,10 @@ public class Board {
 				getPiece.setSquare(null);
 				last.setKilled(getPiece);
 			}
+			return MoveType.ENPASSANT;
 		} else {
 			last.setMoveType(moveType);
+			return moveType;
 		}
-		if (turn == Color.BLACK)
-			turn = Color.WHITE;
-		else
-			turn = Color.BLACK;
-		return true;
 	}
 }

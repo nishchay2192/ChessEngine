@@ -16,49 +16,102 @@ public class Main {
 		hash.put(PieceType.ROOK, "R");
 		hash.put(PieceType.KNIGHT, "K");
 		hash.put(PieceType.PAWN, "P");
+		Result result = play(board, hash, in);
+	}
+
+	public static Result play(Board board, HashMap<PieceType, String> hash,
+			InputReader in) {
+		Result result = Result.DRAW;
 		boolean gameNotOver = true;
 		while (gameNotOver) {
 			displayBoard(board, hash);
-			System.out.print("turn: " + board.getTurn());
 			displayOptions();
-			String fromStr = in.readString();
-			String toStr = in.readString();
 
-			int fromY = fromStr.charAt(0)-'A';
-			int fromX = fromStr.charAt(1)-'0';
-			int toY = toStr.charAt(0)-'A';
-			int toX = toStr.charAt(1)-'0';
-			board.tryToMove(board.the_board[toX][toY], board.the_board[fromX][fromY]);
-			//gameNotOver = processInput(takeInput);
+			//System.out.println("Take Input");
+			int[][] input = processInput(in);
+			//System.out.println("Taken Input");
+			MoveType moveType = board.tryToMove(
+					board.the_board[input[1][0]][input[1][1]],
+					board.the_board[input[0][0]][input[0][1]]);
+			if (moveType == MoveType.UPGRADE) {
+				char upgrade = askForUpgradedPiece(in);
+				board.upgradePawn(
+						board.the_board[input[1][0]][input[1][1]].getPiece(),
+						upgrade);
+			}
+			/*
+			 * if (moveType != MoveType.ILLEGAL) { boolean checkMate = false;
+			 * checkMate = board.checkIfMate(board.getTurn());
+			 * 
+			 * if (checkMate) { gameNotOver = false; result = board.getTurn() ==
+			 * Color.WHITE ? Result.BLACK : Result.WHITE; } }
+			 */
 		}
+		return result;
 	}
-	public static void displayOptions(){
+
+	public static int[][] processInput(InputReader in) {
+		String fromStr;
+		int fromY=0, toY =0;
+		int fromX=0, toX =0;
+		boolean correctInput = false;
+		while (!correctInput) {
+			fromStr = in.readString();
+			fromY = fromStr.charAt(0) - 'A';
+			fromX = fromStr.charAt(1) - '0';
+			fromStr = in.readString();
+			toY = fromStr.charAt(0) - 'A';
+			toX = fromStr.charAt(1) - '0';
+			if (!((fromX >= 0 && fromX <= 7 && fromY >= 0 && fromY <= 7) && (toX >= 0
+					&& toX <= 7 && toY >= 0 && toY <= 7))) {
+				System.out.println("wrongInput, please Input again");
+			} else {
+				correctInput = true;
+			}
+		}
+		return new int[][] { { fromX, fromY }, { toX, toY } };
+	}
+
+	public static char askForUpgradedPiece(InputReader in) {
+		System.out
+				.println("Upgrade pawn to: Enter Q for Queen, R for Rook, N for Knight or B for Bishop, default is Queen");
+		char upgrade = in.readString().toUpperCase().charAt(0);
+		if (upgrade == 'R' || upgrade == 'N' || upgrade == 'B')
+			return upgrade;
+		return 'Q';
+	}
+
+	public static void displayOptions() {
 		System.out.println(". Enter your move:");
 	}
+
 	public static void displayBoard(Board board, HashMap<PieceType, String> hash) {
 		System.out.println("    	   A  B  C  D  E  F  G  H ");
 		System.out.println("    	   ---------------------- ");
-		
+
 		for (int i = 7; i >= 0; i--) {
-			System.out.print(" 	"+(i)+"|");
+			System.out.print(" 	" + (i) + "|");
 			for (int j = 0; j < 8; j++) {
 				Piece here = board.the_board[i][j].getPiece();
-				if(here==null){
+				if (here == null) {
 					System.out.print(" _ ");
 					continue;
 				}
 				if (here.getColor() == Color.WHITE)
 					System.out.print(" "
 							+ hash.get(board.the_board[i][j].getPiece()
-									.getPieceType())+" ");
-				else{
+									.getPieceType()) + " ");
+				else {
 					System.out.print(" "
-							+ hash.get(board.the_board[i][j].getPiece()
-									.getPieceType()).toLowerCase()+" ");
+							+ hash.get(
+									board.the_board[i][j].getPiece()
+											.getPieceType()).toLowerCase()
+							+ " ");
 				}
 			}
 			System.out.println();
 		}
+		System.out.print("turn: " + board.getTurn());
 	}
 }
 
