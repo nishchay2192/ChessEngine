@@ -9,6 +9,10 @@ public class Main {
 	public static void main(String s[]) {
 		InputReader in = new InputReader(System.in);
 		Board board = new Board();
+		Result result = playOnConsole(board, in);
+	}
+
+	public static Result playOnConsole(Board board, InputReader in) {
 		HashMap<PieceType, String> hash = new HashMap();
 		hash.put(PieceType.KING, "E");
 		hash.put(PieceType.QUEEN, "Q");
@@ -16,20 +20,14 @@ public class Main {
 		hash.put(PieceType.ROOK, "R");
 		hash.put(PieceType.KNIGHT, "K");
 		hash.put(PieceType.PAWN, "P");
-		Result result = play(board, hash, in);
-	}
-
-	public static Result play(Board board, HashMap<PieceType, String> hash,
-			InputReader in) {
 		Result result = Result.DRAW;
 		boolean gameNotOver = true;
 		while (gameNotOver) {
 			displayBoard(board, hash);
 			displayOptions();
-
-			//System.out.println("Take Input");
+			// System.out.println("Take Input");
 			int[][] input = processInput(in);
-			//System.out.println("Taken Input");
+			// System.out.println("Taken Input");
 			MoveType moveType = board.tryToMove(
 					board.the_board[input[1][0]][input[1][1]],
 					board.the_board[input[0][0]][input[0][1]]);
@@ -52,8 +50,8 @@ public class Main {
 
 	public static int[][] processInput(InputReader in) {
 		String fromStr;
-		int fromY=0, toY =0;
-		int fromX=0, toX =0;
+		int fromY = 0, toY = 0;
+		int fromX = 0, toX = 0;
 		boolean correctInput = false;
 		while (!correctInput) {
 			fromStr = in.readString();
