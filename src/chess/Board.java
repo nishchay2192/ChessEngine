@@ -133,6 +133,30 @@ public class Board {
 		piece = toBeUpgraded;
 	}
 
+	public void redoMove() {
+		if (last.getNext() != null) {
+			tryToMove(last.getNext().getTo(), last.getNext().getFrom());
+			last = last.getNext();
+		}
+	}
+
+	public void undoMove() {
+		if (last.getMoveType() == MoveType.NORMAL) {
+			Piece piece = last.getTo().getPiece();
+			Piece killed = last.getKilled();
+			if (last.getKilled() != null) {
+				last.getKilled().setAlive();
+				last.getKilled().setSquare(last.getTo());
+			}
+			last.getTo().setPiece(last.getKilled());
+			last.getFrom().setPiece(piece);
+			piece.setSquare(last.getFrom());
+			last = last.getPrevious();
+		}else if(last.getMoveType() == MoveType.DOUBLESTEP){
+			
+		}
+	}
+
 	public MateType canKingMove(Square king) {
 
 		return MateType.NOTYETMATE;
@@ -146,7 +170,7 @@ public class Board {
 
 	public MoveType tryToMove(Square to, Square from) {
 		Piece piece = from.getPiece();
-		//System.out.println("Entered Board");
+		// System.out.println("Entered Board");
 		if (piece == null) {
 			System.out.println("MoveType is: " + MoveType.ILLEGAL);
 			return MoveType.ILLEGAL;

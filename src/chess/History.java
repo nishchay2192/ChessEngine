@@ -15,6 +15,18 @@ public class History {
 		this.from = from;
 		this.killed = killed;
 	}
+	public Square getTo(){
+		return this.to;
+	}
+	public Piece getKilled(){
+		return this.killed;
+	}
+	public MoveType getMoveType(){
+		return this.moveType;
+	}
+	public Square getFrom(){
+		return this.from;
+	}
 	public void setMoveType(MoveType moveType){
 		this.moveType = moveType;
 	}
@@ -22,13 +34,10 @@ public class History {
 		this.next = next;
 		next.prev = this;
 	}
-
-	public void undoLastMove() {
-
+	public History getNext(){
+		return this.next;
 	}
-
-	public void redoUndoMove() {
-
+	public History getPrevious(){
+		return this.prev;
 	}
-
 }

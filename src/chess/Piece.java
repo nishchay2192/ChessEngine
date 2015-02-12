@@ -15,7 +15,9 @@ public abstract class Piece {
 		this.pieceType = pieceType;
 		this.isAlive = true;
 	}
-
+	public void setAlive(){
+		this.isAlive = true;
+	}
 	public void kill() {
 		this.isAlive = false;
 	}
