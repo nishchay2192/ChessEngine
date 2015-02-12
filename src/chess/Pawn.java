@@ -62,7 +62,6 @@ public class Pawn extends Piece {
 					// System.out.println("Pawn seems to make a kill move.");
 					return MoveType.NORMAL;
 				} else {
-					System.out.println("Enpassant Entered");
 					// System.out.println("Pawn seems to make an enpassant move.");
 					return MoveType.ENPASSANT;
 				}

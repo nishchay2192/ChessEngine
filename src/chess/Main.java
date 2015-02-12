@@ -26,17 +26,9 @@ public class Main {
 			displayBoard(board, hash);
 			displayOptions();
 			// System.out.println("Take Input");
-			int[][] input = processInput(in);
+
+			processInput(in, board);
 			// System.out.println("Taken Input");
-			MoveType moveType = board.tryToMove(
-					board.the_board[input[1][0]][input[1][1]],
-					board.the_board[input[0][0]][input[0][1]]);
-			if (moveType == MoveType.UPGRADE) {
-				char upgrade = askForUpgradedPiece(in);
-				board.upgradePawn(
-						board.the_board[input[1][0]][input[1][1]].getPiece(),
-						upgrade);
-			}
 			/*
 			 * if (moveType != MoveType.ILLEGAL) { boolean checkMate = false;
 			 * checkMate = board.checkIfMate(board.getTurn());
@@ -48,26 +40,40 @@ public class Main {
 		return result;
 	}
 
-	public static int[][] processInput(InputReader in) {
+	public static void processInput(InputReader in, Board board) {
 		String fromStr;
 		int fromY = 0, toY = 0;
 		int fromX = 0, toX = 0;
 		boolean correctInput = false;
 		while (!correctInput) {
 			fromStr = in.readString();
-			fromY = fromStr.charAt(0) - 'A';
-			fromX = fromStr.charAt(1) - '0';
-			fromStr = in.readString();
-			toY = fromStr.charAt(0) - 'A';
-			toX = fromStr.charAt(1) - '0';
-			if (!((fromX >= 0 && fromX <= 7 && fromY >= 0 && fromY <= 7) && (toX >= 0
-					&& toX <= 7 && toY >= 0 && toY <= 7))) {
-				System.out.println("wrongInput, please Input again");
-			} else {
+
+			if (fromStr.equals("Undo")) {
+				board.undoMove();
 				correctInput = true;
+			} else if (fromStr.equals("Redo")) {
+				board.redoMove();
+				correctInput = true;
+			} else {
+				fromY = fromStr.charAt(0) - 'A';
+				fromX = fromStr.charAt(1) - '0';
+				fromStr = in.readString();
+				toY = fromStr.charAt(0) - 'A';
+				toX = fromStr.charAt(1) - '0';
+				if (!((fromX >= 0 && fromX <= 7 && fromY >= 0 && fromY <= 7) && (toX >= 0
+						&& toX <= 7 && toY >= 0 && toY <= 7))) {
+					System.out.println("wrongInput, please Input again");
+				} else {
+					correctInput = true;
+				}
+			}
+			MoveType moveType = board.tryToMove(board.the_board[toX][toY],
+					board.the_board[fromX][fromY]);
+			if (moveType == MoveType.UPGRADE) {
+				char upgrade = askForUpgradedPiece(in);
+				board.upgradePawn(board.the_board[toX][toY].getPiece(), upgrade);
 			}
 		}
-		return new int[][] { { fromX, fromY }, { toX, toY } };
 	}
 
 	public static char askForUpgradedPiece(InputReader in) {
@@ -80,7 +86,7 @@ public class Main {
 	}
 
 	public static void displayOptions() {
-		System.out.println(". Enter your move:");
+		System.out.println(". Enter your move, or Undo or Redo");
 	}
 
 	public static void displayBoard(Board board, HashMap<PieceType, String> hash) {

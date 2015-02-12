@@ -83,7 +83,7 @@ public class Board {
 		this.enpassant = enpassant;
 		Piece piece = from.getPiece();
 		Piece toKill = to.getPiece();
-		piece.moved = true;
+
 		to.setPiece(piece);
 		piece.setSquare(to);
 		from.setPiece(null);
@@ -94,6 +94,10 @@ public class Board {
 			History temp = new History(to, from, toKill);
 			last.setNext(temp);
 			last = temp;
+		}
+		if (piece.moved == false) {
+			piece.moved = true;
+			last.setFirstMove(true);
 		}
 	}
 
@@ -126,6 +130,11 @@ public class Board {
 			break;
 		}
 		// Upgrade on Board
+		upgradePawn(piece, toBeUpgraded);
+	}
+
+	private void upgradePawn(Piece piece, Piece toBeUpgraded) {
+		last.setUpgradedTo(toBeUpgraded);
 		piece.getSquare().setPiece(toBeUpgraded);
 		toBeUpgraded.setSquare(piece.getSquare());
 		piece.kill();
@@ -136,25 +145,79 @@ public class Board {
 	public void redoMove() {
 		if (last.getNext() != null) {
 			tryToMove(last.getNext().getTo(), last.getNext().getFrom());
-			last = last.getNext();
+			if (last.getUpgradedTo() != null) {
+				upgradePawn(last.getTo().getPiece(), last.getUpgradedTo());
+			}
 		}
 	}
 
 	public void undoMove() {
-		if (last.getMoveType() == MoveType.NORMAL) {
-			Piece piece = last.getTo().getPiece();
-			Piece killed = last.getKilled();
-			if (last.getKilled() != null) {
-				last.getKilled().setAlive();
-				last.getKilled().setSquare(last.getTo());
+		if (last.isFirstMove()) {
+			last.getTo().getPiece().moved = false;
+		}
+		Piece piece = last.getTo().getPiece();
+		Piece killed = last.getKilled();
+
+		if (last.getMoveType() == MoveType.NORMAL
+				|| last.getMoveType() == MoveType.DOUBLESTEP) {
+			if (killed != null) {
+				killed.setAlive();
+				killed.setSquare(last.getTo());
 			}
-			last.getTo().setPiece(last.getKilled());
+			last.getTo().setPiece(killed);
 			last.getFrom().setPiece(piece);
 			piece.setSquare(last.getFrom());
 			last = last.getPrevious();
-		}else if(last.getMoveType() == MoveType.DOUBLESTEP){
-			
+		} else if (last.getMoveType() == MoveType.ENPASSANT) {
+			piece.setSquare(last.getFrom());
+			last.getFrom().setPiece(piece);
+			last.getTo().setPiece(null);
+			int X = last.getTo().getX();
+			int Y = last.getTo().getY();
+			if (killed.getColor() == Color.WHITE) {
+				killed.setAlive();
+				killed.setSquare(the_board[X + 1][Y]);
+				the_board[X + 1][Y].setPiece(killed);
+			} else {
+				killed.setAlive();
+				killed.setSquare(the_board[X - 1][Y]);
+				the_board[X - 1][Y].setPiece(killed);
+			}
+			this.enpassant = last.getTo();
+			last = last.getPrevious();
+		} else if (last.getMoveType() == MoveType.CASTLE) {
+			int fromY = last.getFrom().getY();
+			int fromX = last.getFrom().getX();
+			int toY = last.getTo().getY();
+			int toX = last.getTo().getX();
+			if (toY < fromY) {
+				Piece rook = the_board[toX][toY + 1].getPiece();
+				the_board[toX][toY + 1].setPiece(null);
+				rook.setSquare(the_board[toX][0]);
+				the_board[toX][0].setPiece(rook);
+				rook.moved = false;
+			} else {
+				Piece rook = the_board[toX][toY - 1].getPiece();
+				the_board[toX][toY - 1].setPiece(null);
+				rook.setSquare(the_board[toX][7]);
+				the_board[toX][7].setPiece(rook);
+				rook.moved = false;
+			}
+			piece.setSquare(last.getFrom());
+			last.getFrom().setPiece(piece);
+			last.getTo().setPiece(null);
+			last = last.getPrevious();
+		} else if (last.getMoveType() == MoveType.UPGRADE) {
+			Piece pawn = new Pawn(last.getFrom(), piece.getColor(),
+					PieceType.PAWN);
+			last.getFrom().setPiece(pawn);
+			last.getTo().setPiece(killed);
+			killed.setSquare(last.getTo());
+			piece.kill();
+			piece.setSquare(null);
+			last = last.getPrevious();
 		}
+		turn = turn == Color.WHITE ? Color.BLACK : Color.WHITE;
 	}
 
 	public MateType canKingMove(Square king) {
