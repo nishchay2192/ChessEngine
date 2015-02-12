@@ -25,10 +25,10 @@ public class Queen extends Piece {
 				diffY = diffY / Math.abs(diffY);
 			int currX = X;
 			int currY = Y;
-			while (currX != destX && currY != destY) {
-				currX = X + diffX;
-				currY = Y + diffY;
-				if (currX != destX && currY != destY) {
+			while (currX != destX || currY != destY) {
+				currX = currX + diffX;
+				currY = currY + diffY;
+				if (currX != destX || currY != destY) {
 					if (dest.board.the_board[currX][currY].getPiece() == null) {
 						continue;
 					} else {
