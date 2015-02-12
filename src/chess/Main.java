@@ -47,12 +47,14 @@ public class Main {
 		boolean correctInput = false;
 		while (!correctInput) {
 			fromStr = in.readString();
-
-			if (fromStr.equals("Undo")) {
+			if (fromStr.equalsIgnoreCase("Undo")) {
 				board.undoMove();
 				correctInput = true;
-			} else if (fromStr.equals("Redo")) {
+			} else if (fromStr.equalsIgnoreCase("Redo")) {
 				board.redoMove();
+				correctInput = true;
+			} else if (fromStr.equalsIgnoreCase("showHistory")) {
+				System.out.println(board.showHistory());
 				correctInput = true;
 			} else {
 				fromY = fromStr.charAt(0) - 'A';
@@ -66,12 +68,13 @@ public class Main {
 				} else {
 					correctInput = true;
 				}
-			}
-			MoveType moveType = board.tryToMove(board.the_board[toX][toY],
-					board.the_board[fromX][fromY]);
-			if (moveType == MoveType.UPGRADE) {
-				char upgrade = askForUpgradedPiece(in);
-				board.upgradePawn(board.the_board[toX][toY].getPiece(), upgrade);
+				MoveType moveType = board.tryToMove(board.the_board[toX][toY],
+						board.the_board[fromX][fromY]);
+				if (moveType == MoveType.UPGRADE) {
+					char upgrade = askForUpgradedPiece(in);
+					board.upgradePawn(board.the_board[toX][toY].getPiece(),
+							upgrade);
+				}
 			}
 		}
 	}
@@ -86,7 +89,7 @@ public class Main {
 	}
 
 	public static void displayOptions() {
-		System.out.println(". Enter your move, or Undo or Redo");
+		System.out.println(". Enter your move, or Undo or Redo or showHistory");
 	}
 
 	public static void displayBoard(Board board, HashMap<PieceType, String> hash) {

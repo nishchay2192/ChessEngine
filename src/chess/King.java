@@ -17,9 +17,10 @@ public class King extends Piece {
 			int destY = dest.getY();
 			int X = this.getSquare().getX();
 			int Y = this.getSquare().getY();
-
+			System.out.println(X + " " + Y + " " + destX + "" + destY);
 			if ((Math.abs(destX - X) == 1 || Math.abs(destY - Y) == 1)
-					&& (Math.abs(destY - Y) == 1 || Math.abs(destY - Y) == 1)) {
+					&& (Math.abs(destY - Y) == 0 || Math.abs(destX - X) == 0)) {
+
 				return MoveType.NORMAL;
 			} else if (Math.abs(destY - Y) == 2 && destX == X
 					&& this.getColor() == Color.WHITE && !this.moved

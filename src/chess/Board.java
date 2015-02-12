@@ -150,7 +150,20 @@ public class Board {
 			}
 		}
 	}
-
+    public String showHistory(){
+    	History temp = first;
+    	StringBuffer sb = new StringBuffer("");
+    	while(temp!=null){
+    		sb.append((char)(temp.getFrom().getY()+'A'));
+    		sb.append(temp.getFrom().getX());
+    		sb.append(" ");
+    		sb.append((char)(temp.getTo().getY()+'A'));
+    		sb.append(temp.getTo().getX());
+    		sb.append("\n");
+    		temp = temp.getNext();
+    	}
+    	return sb.toString();
+    }
 	public void undoMove() {
 		if (last.isFirstMove()) {
 			last.getTo().getPiece().moved = false;
