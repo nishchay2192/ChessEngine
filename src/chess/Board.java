@@ -8,6 +8,7 @@ public class Board {
 	private Square enpassant;
 	private Piece blackKing, whiteKing;
 	boolean blackCanCastle = true, whiteCanCastle = true;
+	private Result result = Result.CONTINUE;
 	Square[][] the_board = new Square[WIDTH][HEIGHT];
 
 	public Board() {
@@ -79,6 +80,7 @@ public class Board {
 			return whiteKing.getSquare();
 	}
 
+	
 	public void move(Square to, Square from, Square enpassant) {
 		this.enpassant = enpassant;
 		Piece piece = from.getPiece();

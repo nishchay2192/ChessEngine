@@ -25,23 +25,15 @@ public class Main {
 		while (gameNotOver) {
 			displayBoard(board, hash);
 			displayOptions();
-			// System.out.println("Take Input");
-
-			processInput(in, board);
-			// System.out.println("Taken Input");
-			/*
-			 * if (moveType != MoveType.ILLEGAL) { boolean checkMate = false;
-			 * checkMate = board.checkIfMate(board.getTurn());
-			 * 
-			 * if (checkMate) { gameNotOver = false; result = board.getTurn() ==
-			 * Color.WHITE ? Result.BLACK : Result.WHITE; } }
-			 */
+			gameNotOver = !(processInput(in, board));
 		}
+		//result = board.result;
 		return result;
 	}
 
-	public static void processInput(InputReader in, Board board) {
+	public static boolean processInput(InputReader in, Board board) {
 		String fromStr;
+		boolean gameOver = false;
 		int fromY = 0, toY = 0;
 		int fromX = 0, toX = 0;
 		boolean correctInput = false;
@@ -55,6 +47,9 @@ public class Main {
 				correctInput = true;
 			} else if (fromStr.equalsIgnoreCase("showHistory")) {
 				System.out.println(board.showHistory());
+				correctInput = true;
+			} else if (fromStr.equalsIgnoreCase("quit")) {
+				gameOver = true;
 				correctInput = true;
 			} else {
 				fromY = fromStr.charAt(0) - 'A';
@@ -75,8 +70,18 @@ public class Main {
 					board.upgradePawn(board.the_board[toX][toY].getPiece(),
 							upgrade);
 				}
+				// System.out.println("Taken Input");
+				/*
+				 * if (moveType != MoveType.ILLEGAL) { boolean checkMate =
+				 * false; checkMate = board.checkIfMate(board.getTurn());
+				 * 
+				 * if (checkMate) { gameNotOver = false; result =
+				 * board.getTurn() == Color.WHITE ? Result.BLACK : Result.WHITE;
+				 * } }
+				 */
 			}
 		}
+		return gameOver;
 	}
 
 	public static char askForUpgradedPiece(InputReader in) {
@@ -89,7 +94,7 @@ public class Main {
 	}
 
 	public static void displayOptions() {
-		System.out.println(". Enter your move, or Undo or Redo or showHistory");
+		System.out.println(". Enter your move, or Undo or Redo, quit or showHistory.");
 	}
 
 	public static void displayBoard(Board board, HashMap<PieceType, String> hash) {

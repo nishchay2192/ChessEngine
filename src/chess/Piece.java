@@ -15,9 +15,11 @@ public abstract class Piece {
 		this.pieceType = pieceType;
 		this.isAlive = true;
 	}
-	public void setAlive(){
+
+	public void setAlive() {
 		this.isAlive = true;
 	}
+
 	public void kill() {
 		this.isAlive = false;
 	}
@@ -226,13 +228,21 @@ public abstract class Piece {
 				if (this.color == Color.WHITE) {
 					row = 0;
 				}
+				Square from, to;
+				Piece rook;
+				//Move rook here as move method will create another History node for Rook.
 				if (dest.getY() < location.getY()) {
-					dest.board.move(dest.board.the_board[row][3],
-							dest.board.the_board[row][0]);
+					from = dest.board.the_board[row][0];
+					to = dest.board.the_board[row][3];
 				} else {
-					dest.board.move(dest.board.the_board[row][5],
-							dest.board.the_board[row][7]);
+					from = dest.board.the_board[row][7];
+					to = dest.board.the_board[row][5];
 				}
+				rook = from.getPiece();
+				to.setPiece(rook);
+				rook.setSquare(to);
+				from.setPiece(null);
+				rook.moved = true;
 				return MoveType.CASTLE;
 			} else if (canMoveType == MoveType.UPGRADE) {
 				dest.board.move(dest, location);

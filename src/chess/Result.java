@@ -1,5 +1,5 @@
 package chess;
 
 public enum Result {
-WHITE, BLACK, DRAW;
+WHITE, BLACK, DRAW, CONTINUE;
 }
